@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+#
+# Summary: migrate installed gems
+#
+# Usage : rbenv migrate <from_version> <to_version> <gem command options>
+
+[ -n "$RBENV_DEBUG" ] && set -x
+
+RBENV_MIGRATE_VERSION="0.0.0"
+
+if [ "$1" = "--version" ] || [ "$1" = "-v" ]; then
+    echo "rbenv-migrate ${RBENV_MIGRATE_VERSION}"
+    exit
+fi
+
+[ -z "$RBENV_ROOT" ] && RBENV_ROOT="${HOME}/.rbenv"
+
+# Provide rbenv completions
+[ "$1" = "--complete" ] || [ "$2" = "--complete" ] && exec rbenv versions --bare
+
+from_version=$1
+to_version=$2
+shift
+shift
+
+if [ ${from_version} = ${to_version} ]; then
+    echo "from_version(${from_version}) and to_version(${to_version} are the same"
+    exit 1
+fi
+
+gem_install_options="$@"
+
+[ -z "$RBENV_VERSION" ] && O_RBENV_VERSION="${RBENV_VERSION}"
+
+for i in `RBENV_VERSION="${from_version}" gem list | awk '{ if ( $1 !~ /^$/ ) print $1}'`; do
+    RBENV_VERSION="${to_version}" gem list "${i}" | grep "${i}" > /dev/null 2>&1
+    chk=$?
+    [ $chk -ne 0 ] && RBENV_VERSION="${to_version}" gem install "${i}" ${gem_install_options}
+done
+
+if [ -z "$O_RBENV_VERSION" ]; then
+  RBENV_VERSION="${O_RBENV_VERSION}"
+else
+  unset RBENV_VERSION
+fi
