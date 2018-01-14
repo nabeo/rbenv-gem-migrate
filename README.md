@@ -6,7 +6,7 @@ by ```plenv migrate-modules```.
 ## installation and usage
 1. Install the plugin.
 
-   ```$ git clone https://github.com/nabeo/rbenv-gem-migrate.git ~/.rbenv/plugins```
+   ```$ git clone https://github.com/nabeo/rbenv-gem-migrate.git ~/.rbenv/plugins/rbenv-gem-migrate```
 
 2. migrate gems
 
